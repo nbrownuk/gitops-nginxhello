@@ -1,0 +1,15 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: nginxhello-hr
+  namespace: default
+  annotations:
+    fluxcd.io/ignore: "true"
+spec:
+  chart:
+    git: ssh://git@github.com/<git user>/gitops-nginxhello.git
+    path: helm/chart
+    ref: master
+  rollback:
+    enable: true
+    retry: true

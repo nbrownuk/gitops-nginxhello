@@ -1,0 +1,31 @@
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: nginxhello-canary
+  namespace: default
+  annotations:
+    fluxcd.io/ignore: "true"
+spec:
+  provider: nginx
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: default-nginxhello-hr
+  ingressRef:
+    apiVersion: networking.k8s.io/v1beta1
+    kind: Ingress
+    name: default-nginxhello-hr
+  progressDeadlineSeconds: 180
+  service:
+    port: 80
+    targetPort: 80
+  analysis:
+    interval: 1m
+    threshold: 3
+    maxWeight: 50
+    stepWeight: 5
+    metrics:
+    - name: request-success-rate
+      thresholdRange:
+        min: 99
+      interval: 1m

@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginxhello
+  name: nginxhello
+  annotations:
+    fluxcd.io/ignore: "true"
+    fluxcd.io/automated: "false"
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginxhello
+  template:
+    metadata:
+      labels:
+        app: nginxhello
+    spec:
+      containers:
+      - image: nbrown/nginxhello:1.19.0
+        name: nginxhello
+        ports:
+        - containerPort: 80
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        livenessProbe:
+          initialDelaySeconds: 2
+          periodSeconds: 2
+          httpGet:
+            port: 80
+            path: /healthz/live
+        readinessProbe:
+          initialDelaySeconds: 2
+          periodSeconds: 2
+          httpGet:
+            port: 80
+            path: /healthz/ready
